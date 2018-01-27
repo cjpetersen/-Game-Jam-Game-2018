@@ -49,6 +49,7 @@ public class PlayerMovement : MonoBehaviour {
             xMove = -1;
         }
 
-        characterController.SimpleMove(new Vector3(xMove, 0, zMove));
+        moveSpeed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? MoveSpeed.Run : MoveSpeed.Walk;
+        characterController.SimpleMove(transform.rotation * new Vector3(xMove, 0, zMove) * CurrentMoveSpeed);
 	}
 }
