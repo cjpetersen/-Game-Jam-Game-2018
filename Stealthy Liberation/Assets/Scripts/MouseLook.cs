@@ -32,6 +32,8 @@ public class MouseLook : MonoBehaviour
     float rotationY = 0F;
     new Rigidbody rigidbody;
 
+    private Vector3 lastMouseAxis;
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
@@ -41,28 +43,35 @@ public class MouseLook : MonoBehaviour
     {
         if (axes == RotationAxes.MouseXAndY)
         {
-            float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
+            float rotationX = transform.localEulerAngles.y + (lastMouseAxis - Input.mousePosition).x * sensitivityX;
 
-            rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+            rotationY += (lastMouseAxis - Input.mousePosition).y * sensitivityY;
             rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 
             transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
         }
         else if (axes == RotationAxes.MouseX)
         {
-            transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityX, 0);
+            transform.Rotate(0, (lastMouseAxis - Input.mousePosition).x * sensitivityX, 0);
         }
         else
         {
-            rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+            rotationY += (lastMouseAxis - Input.mousePosition).y * sensitivityY;
             rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 
             transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
         }
     }
 
+    private void LateUpdate()
+    {
+        lastMouseAxis = Input.mousePosition;
+    }
+
     void Start()
     {
+        lastMouseAxis = Input.mousePosition;
+
         // Make the rigid body not change rotation
         if (rigidbody)
             rigidbody.freezeRotation = true;

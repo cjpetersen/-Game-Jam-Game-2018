@@ -125,8 +125,8 @@ GameObject:
   - component: {fileID: 630665696}
   - component: {fileID: 630665695}
   - component: {fileID: 630665700}
-  - component: {fileID: 630665699}
   - component: {fileID: 630665701}
+  - component: {fileID: 630665699}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -209,8 +209,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 0
-  runSpeed: 10
-  walkSpeed: 5
+  runSpeed: 6
+  walkSpeed: 3
 --- !u!143 &630665700
 CharacterController:
   m_ObjectHideFlags: 0
@@ -240,8 +240,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   axes: 0
-  sensitivityX: 15
-  sensitivityY: 15
+  sensitivityX: -1.5
+  sensitivityY: -1.5
   minimumX: -360
   maximumX: 360
   minimumY: -60
