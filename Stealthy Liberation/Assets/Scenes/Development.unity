@@ -236,9 +236,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 630665694}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d169999d8e8d18f4f901d73ce176bf3e, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c9b2efabc96e5f4b8206a974be1d9e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axes: 0
+  sensitivityX: 15
+  sensitivityY: 15
+  minimumX: -360
+  maximumX: 360
+  minimumY: -60
+  maximumY: 60
 --- !u!1 &700912873
 GameObject:
   m_ObjectHideFlags: 0
