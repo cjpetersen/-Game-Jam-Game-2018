@@ -13,12 +13,14 @@ public class LightSource : MonoBehaviour
     public float minBrightnessProportion = 0.9f;
 
     private SphereCollider _sphereCollider;
+    private HashSet<GameObject> _triggersThisFrame;
 
     private void Awake()
     {
         _sphereCollider = GetComponent<SphereCollider>();
         _sphereCollider.radius = attachedLight.range;
         _sphereCollider.isTrigger = true;
+        _triggersThisFrame = new HashSet<GameObject>();
     }
 
     void Start () {
@@ -26,8 +28,8 @@ public class LightSource : MonoBehaviour
 	}
 
     void Update () {
-		
-	}
+        _triggersThisFrame.Clear();
+    }
 
     void OnDrawGizmos()
     {
@@ -38,15 +40,19 @@ public class LightSource : MonoBehaviour
     }
 
     private void OnTriggerStay(Collider collider)
-    {
-        // if inside sphere, make a ray cast on light layer to find if object is lit
-        RaycastHit raycastHit;
-        if (Physics.Raycast(transform.position, collider.transform.position - transform.position, out raycastHit, attachedLight.range, LightState.Instance.visibleMask))
-        { // hit an object that can be seen
-            var objectHideProbability = CalculateHideProbability(raycastHit.distance);
-            if (objectHideProbability < 1f)
-            {
-                LightState.Instance.ReportObjectLit(this, collider.gameObject, objectHideProbability);
+    { // since OnTriggerStay gets called every FixedUpdate, throttle it to only report once per update
+        if (!_triggersThisFrame.Contains(collider.gameObject))
+        {
+            _triggersThisFrame.Add(collider.gameObject);
+            // if inside sphere, make a ray cast on light layer to find if object is lit
+            RaycastHit raycastHit;
+            if (Physics.Raycast(transform.position, collider.transform.position - transform.position, out raycastHit, attachedLight.range, LightState.Instance.visibleMask))
+            { // hit an object that can be seen
+                var objectHideProbability = CalculateHideProbability(raycastHit.distance);
+                if (objectHideProbability < 1f)
+                {
+                    LightState.Instance.ReportObjectLit(this, collider.gameObject, objectHideProbability);
+                }
             }
         }
     }
