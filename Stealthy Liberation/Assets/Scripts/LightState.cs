@@ -10,6 +10,7 @@ public class LightState : MonoBehaviour {
     public static LightState Instance;
 
     private Dictionary<GameObject, List<LightHideChance>> _objectLightSources;
+    private int _framesElapsedSinceReport = 0;
 
     private void Awake()
     {
@@ -22,6 +23,12 @@ public class LightState : MonoBehaviour {
 
     public void ReportObjectLit(LightSource source, GameObject litObject, float hideChance)
     {
+        if (_framesElapsedSinceReport > 0)
+        {
+            _objectLightSources.Clear();
+        }
+        _framesElapsedSinceReport = 0;
+
         List<LightHideChance> objectLightList;
         if (!_objectLightSources.TryGetValue(litObject, out objectLightList))
         {
@@ -48,7 +55,11 @@ public class LightState : MonoBehaviour {
 
     private void LateUpdate()
     {
-        _objectLightSources.Clear();
+        _framesElapsedSinceReport++;
+        if (_objectLightSources.Count > 0 && _framesElapsedSinceReport >= 2)
+        {
+            _objectLightSources.Clear();
+        }
     }
 
     private class LightHideChance
