@@ -15,6 +15,7 @@ public class FollowScript : MonoBehaviour
     public float LostPlayerTimer = 5f;
     public float PatrolTimer = 5f;
     public int PatrolIndex = 0;
+    public float darkSightDistance = 3;
 
     void Start()
     {
@@ -71,15 +72,23 @@ public class FollowScript : MonoBehaviour
 
     private void OnObjectSeen(Collider col)
     {
-        Debug.Log("In view");
+        //Debug.Log("In view");
         if (col.gameObject.CompareTag("Player"))
         {
-            var playerHideProbability = LightState.Instance.GetHideProbability(col.gameObject);
-            // seen instantly when less than .5 hidden
-            // 1/120 chance of being seen when less than 1 hidden (approx once per 2 seconds)
-            if (playerHideProbability < .5 || (playerHideProbability < 1 && UnityEngine.Random.Range(1, 120) == 1))
+            if (Vector3.Distance(transform.position, col.gameObject.transform.position) <= darkSightDistance)
             {
+                // players within darksight distance are seen even in the dark
                 PlayerFound(col.gameObject);
+            }
+            else
+            {
+                var playerHideProbability = LightState.Instance.GetHideProbability(col.gameObject);
+                // seen instantly when less than .5 hidden
+                // 1/120 chance of being seen when less than 1 hidden (approx once per 2 seconds)
+                if (playerHideProbability < .5 || (playerHideProbability < 1 && UnityEngine.Random.Range(1, 120) == 1))
+                {
+                    PlayerFound(col.gameObject);
+                }
             }
         }
     }
@@ -89,6 +98,12 @@ public class FollowScript : MonoBehaviour
         playerFound = true;
         target = player.transform;
         LostPlayerTimer = 5f;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.gray;
+        Gizmos.DrawWireSphere(transform.position, darkSightDistance);
     }
 
 }

@@ -7,13 +7,13 @@ using UnityEngine;
 [RequireComponent(typeof(SphereCollider))]
 public class LightSource : MonoBehaviour
 {
-
     public Light attachedLight;
     public float maxBrightnessProportion = 0.25f;
     public float minBrightnessProportion = 0.9f;
 
     private SphereCollider _sphereCollider;
     private HashSet<GameObject> _triggersThisFrame;
+    private List<GameObject> _litObjects = new List<GameObject>();
 
     private void Awake()
     {
@@ -37,6 +37,13 @@ public class LightSource : MonoBehaviour
             return;
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, attachedLight.range);
+        Gizmos.color = Color.green;
+        foreach(var litObject in _litObjects)
+        {
+            Gizmos.DrawRay(transform.position, litObject.transform.position - transform.position);
+        }
+
+        _litObjects.Clear();
     }
 
     private void OnTriggerStay(Collider collider)
@@ -46,12 +53,17 @@ public class LightSource : MonoBehaviour
             _triggersThisFrame.Add(collider.gameObject);
             // if inside sphere, make a ray cast on light layer to find if object is lit
             RaycastHit raycastHit;
-            if (Physics.Raycast(transform.position, collider.transform.position - transform.position, out raycastHit, attachedLight.range, LightState.Instance.visibleMask))
-            { // hit an object that can be seen
-                var objectHideProbability = CalculateHideProbability(raycastHit.distance);
-                if (objectHideProbability < 1f)
-                {
-                    LightState.Instance.ReportObjectLit(this, collider.gameObject, objectHideProbability);
+            if (Physics.Raycast(transform.position, collider.transform.position - transform.position, out raycastHit, attachedLight.range))
+            { // hit an object
+                _litObjects.Add(collider.gameObject);
+                //Debug.Log("Shining on object " + collider.gameObject.name);
+                if ((LightState.Instance.visibleMask & 1 << raycastHit.collider.gameObject.layer) != 0)
+                { // hit an object that we actually care about
+                    var objectHideProbability = CalculateHideProbability(raycastHit.distance);
+                    if (objectHideProbability < 1f)
+                    {
+                        LightState.Instance.ReportObjectLit(this, collider.gameObject, objectHideProbability);
+                    }
                 }
             }
         }

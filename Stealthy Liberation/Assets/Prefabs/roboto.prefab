@@ -70,7 +70,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1357481757226172}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 40.61953, y: 0.15838632, z: -1.2029889}
+  m_LocalPosition: {x: -2.1, y: 0.5, z: -26.1}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 4114136063946246}
@@ -176,6 +176,7 @@ MonoBehaviour:
   LostPlayerTimer: 5
   PatrolTimer: 5
   PatrolIndex: 0
+  darkSightDistance: 4
 --- !u!114 &114561891280071650
 MonoBehaviour:
   m_ObjectHideFlags: 1

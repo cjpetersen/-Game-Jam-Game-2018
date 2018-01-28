@@ -54,3 +54,6 @@ MonoBehaviour:
   visibleMask:
     serializedVersion: 2
     m_Bits: 256
+  visionMask:
+    serializedVersion: 2
+    m_Bits: 4294966783

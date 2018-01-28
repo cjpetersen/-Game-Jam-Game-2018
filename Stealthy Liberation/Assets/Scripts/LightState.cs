@@ -5,6 +5,7 @@ using UnityEngine;
 public class LightState : MonoBehaviour {
 
     public LayerMask visibleMask;
+    public LayerMask visionMask;
 
     public static LightState Instance;
 

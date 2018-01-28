@@ -12,9 +12,11 @@ public class Vision : MonoBehaviour {
     public float checkFrequency = .25f;
 
     private float checkTimer = 0;
+
+    private List<GameObject> colliderList = new List<GameObject>();
 	
 	void Update () {
-
+        colliderList.Clear();
         if (checkTimer <= 0)
         {
             checkTimer = checkFrequency;
@@ -25,8 +27,14 @@ public class Vision : MonoBehaviour {
                 var viewAngle = Vector3.Angle(transform.rotation * Vector3.forward, directionVector);
                 if (viewAngle <= visionAngle / 2 && viewAngle >= -visionAngle / 2)
                 {
-                    if (ObjectSeen != null)
-                        ObjectSeen(col);
+                    // now cast a ray at the object and see if it's blocked
+                    colliderList.Add(col.gameObject);
+                    RaycastHit raycastHit;
+                    if (Physics.Raycast(transform.position, directionVector, out raycastHit, Vector3.Distance(transform.position, col.transform.position), LightState.Instance.visionMask) && raycastHit.collider.gameObject == col.gameObject)
+                    {
+                        if (ObjectSeen != null)
+                            ObjectSeen(col);
+                    }
                 }
             }
         }
@@ -52,6 +60,13 @@ public class Vision : MonoBehaviour {
         Gizmos.DrawLine(transform.position, visionConeRight);
         Gizmos.DrawLine(transform.position, visionConeTop);
         Gizmos.DrawLine(transform.position, visionConeBottom);
+
+        Gizmos.color = Color.yellow;
+        foreach( var collidedObject in colliderList)
+        {
+            var directionVector = collidedObject.transform.position - transform.position;
+            Gizmos.DrawRay(transform.position, directionVector);
+        }
     }
 
     private Vector3 CalculateVisionLimit(Vector3 angle)
