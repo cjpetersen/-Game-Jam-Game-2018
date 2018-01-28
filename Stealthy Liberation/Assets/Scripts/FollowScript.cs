@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -7,6 +8,7 @@ public class FollowScript : MonoBehaviour
 {
 
     NavMeshAgent agent;
+    Vision vision;
     public Transform target;
     public Transform[] targetArr;
     private bool playerFound = false;
@@ -17,7 +19,12 @@ public class FollowScript : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        
+        vision = GetComponent<Vision>();
+
+        if (vision)
+        {
+            vision.ObjectSeen += OnObjectSeen;
+        }
     }
 
     void Update()
@@ -34,24 +41,18 @@ public class FollowScript : MonoBehaviour
             playerFound = false;
             
         }
-
-        if (Vector3.Distance(target.position, transform.position) < 5)
-        {
-            playerFound = true;
-
-            agent.SetDestination(target.position);
-
-                LostPlayerTimer = 5f;
-              
-        }
         
-        else
+        if (!playerFound)
         {
             PatrolTimer -= Time.deltaTime;
         }
+        else if (target != null)
+        {
+            agent.SetDestination(target.position);
+        }
         
 
-        if (PatrolTimer <= 5 && playerFound == false)
+        if (PatrolTimer <= 5 && playerFound == false && PatrolIndex < targetArr.Length && targetArr[PatrolIndex] != null)
         {
             agent.SetDestination(targetArr[PatrolIndex].position);
             if (PatrolTimer <= 0)
@@ -66,6 +67,26 @@ public class FollowScript : MonoBehaviour
             }
         }
    
+    }
+
+    private void OnObjectSeen(Collider col)
+    {
+        Debug.Log("In view");
+        if (col.gameObject.CompareTag("Player"))
+        {
+            var playerHideProbability = LightState.Instance.GetHideProbability(col.gameObject);
+            if (playerHideProbability < 1) // instant seen
+            {
+                PlayerFound(col.gameObject);
+            }
+        }
+    }
+
+    private void PlayerFound(GameObject player)
+    {
+        playerFound = true;
+        target = player.transform;
+        LostPlayerTimer = 5f;
     }
 
 }

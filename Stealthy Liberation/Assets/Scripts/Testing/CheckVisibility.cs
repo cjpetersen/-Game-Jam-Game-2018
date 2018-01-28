@@ -7,7 +7,8 @@ namespace Testing
     public class CheckVisibility : MonoBehaviour
     {
         public GameObject targetToCheck;
-        public float pollFrequency = .5f;
+        public float pollFrequency = 
+            .5f;
 
         private float pollTimer = 0;
 
