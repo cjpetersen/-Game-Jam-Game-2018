@@ -75,7 +75,9 @@ public class FollowScript : MonoBehaviour
         if (col.gameObject.CompareTag("Player"))
         {
             var playerHideProbability = LightState.Instance.GetHideProbability(col.gameObject);
-            if (playerHideProbability < 1) // instant seen
+            // seen instantly when less than .5 hidden
+            // 1/120 chance of being seen when less than 1 hidden (approx once per 2 seconds)
+            if (playerHideProbability < .5 || (playerHideProbability < 1 && UnityEngine.Random.Range(1, 120) == 1))
             {
                 PlayerFound(col.gameObject);
             }
